@@ -6,8 +6,9 @@ services:
     dockerContext: .
     dockerfilePath: ./mysql.Dockerfile
     plan: free
-    port: 3306
     envVars:
+      - key: PORT
+        value: 3306
       - key: MYSQL_ROOT_PASSWORD
         value: rootpassword
       - key: MYSQL_DATABASE
@@ -20,8 +21,9 @@ services:
     dockerContext: .
     dockerfilePath: ./minio.Dockerfile
     plan: free
-    port: 9001
     envVars:
+      - key: PORT
+        value: 9001
       - key: MINIO_ROOT_USER
         value: minioadmin
       - key: MINIO_ROOT_PASSWORD
@@ -36,8 +38,9 @@ services:
     dockerContext: ./backend
     dockerfilePath: ./Dockerfile
     plan: free
-    port: 8080
     envVars:
+      - key: PORT
+        value: 8080
       - key: SPRING_DATASOURCE_URL
         value: jdbc:mysql://cloud-storage-db:3306/cloud_storage
       - key: SPRING_DATASOURCE_USERNAME
@@ -60,7 +63,8 @@ services:
     dockerContext: ./frontend
     dockerfilePath: ./Dockerfile
     plan: free
-    port: 80
     envVars:
+      - key: PORT
+        value: 80
       - key: VITE_API_URL
         value: https://cloud-storage-backend.onrender.com # Change this once URL is known
