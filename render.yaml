@@ -1,0 +1,62 @@
+services:
+  # Database Service (MySQL)
+  - type: web
+    name: cloud-storage-db
+    runtime: docker
+    plan: free # Free tier might not work with persistent disks, but we'll try
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        value: rootpassword
+      - key: MYSQL_DATABASE
+        value: cloud_storage
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 1
+
+  # MinIO Object Storage Service
+  - type: web
+    name: cloud-storage-minio
+    runtime: docker
+    plan: free
+    envVars:
+      - key: MINIO_ROOT_USER
+        value: minioadmin
+      - key: MINIO_ROOT_PASSWORD
+        value: minioadmin
+    disk:
+      name: minio-data
+      mountPath: /data
+      sizeGB: 1
+    # Command to start minio
+    dockerCommand: server /data --console-address ":9001"
+
+  # Backend Service (Spring Boot)
+  - type: web
+    name: cloud-storage-backend
+    runtime: docker
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://cloud-storage-db:3306/cloud_storage
+      - key: SPRING_DATASOURCE_USERNAME
+        value: root
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: rootpassword
+      - key: MINIO_ENDPOINT
+        value: http://cloud-storage-minio:9000
+      - key: MINIO_ACCESS_KEY
+        value: minioadmin
+      - key: MINIO_SECRET_KEY
+        value: minioadmin
+      - key: MINIO_BUCKET
+        value: cloud-files
+
+  # Frontend Service (React)
+  - type: web
+    name: cloud-storage-frontend
+    runtime: docker
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        value: https://cloud-storage-backend.onrender.com # Change this once URL is known
