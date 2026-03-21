@@ -3,16 +3,12 @@ services:
   - type: web
     name: cloud-storage-db
     runtime: docker
-    plan: free # Free tier might not work with persistent disks, but we'll try
+    plan: free
     envVars:
       - key: MYSQL_ROOT_PASSWORD
         value: rootpassword
       - key: MYSQL_DATABASE
         value: cloud_storage
-    disk:
-      name: mysql-data
-      mountPath: /var/lib/mysql
-      sizeGB: 1
 
   # MinIO Object Storage Service
   - type: web
@@ -24,10 +20,6 @@ services:
         value: minioadmin
       - key: MINIO_ROOT_PASSWORD
         value: minioadmin
-    disk:
-      name: minio-data
-      mountPath: /data
-      sizeGB: 1
     # Command to start minio
     dockerCommand: server /data --console-address ":9001"
 
