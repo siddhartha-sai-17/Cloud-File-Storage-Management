@@ -2,8 +2,9 @@ services:
   # Database Service (MySQL)
   - type: web
     name: cloud-storage-db
-    runtime: image
-    image: mysql:8.0
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./mysql.Dockerfile
     plan: free
     envVars:
       - key: MYSQL_ROOT_PASSWORD
@@ -14,8 +15,9 @@ services:
   # MinIO Object Storage Service
   - type: web
     name: cloud-storage-minio
-    runtime: image
-    image: minio/minio
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./minio.Dockerfile
     plan: free
     envVars:
       - key: MINIO_ROOT_USER
