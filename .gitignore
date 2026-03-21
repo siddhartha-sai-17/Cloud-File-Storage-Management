@@ -1,0 +1,33 @@
+# Logs
+*.txt
+*.log
+
+# Docker
+docker_logs.txt
+backend_logs.txt
+full_backend_logs.txt
+latest_logs.txt
+logs_utf8.txt
+
+# Node
+node_modules/
+dist/
+.env
+
+# Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
