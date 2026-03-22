@@ -1,5 +1,6 @@
 # Logs
 *.txt
+!requirements.txt
 *.log
 
 # Docker
