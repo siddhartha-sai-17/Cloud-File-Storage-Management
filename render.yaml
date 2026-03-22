@@ -67,4 +67,17 @@ services:
       - key: PORT
         value: 80
       - key: VITE_API_URL
-        value: https://cloud-storage-backend.onrender.com # Change this once URL is known
+        value: https://cloud-storage-backend.onrender.com
+
+  # Streamlit Dashboard Service
+  - type: web
+    name: cloud-storage-streamlit
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: ./streamlit.Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8501
+      - key: BACKEND_URL
+        value: https://cloud-storage-backend.onrender.com

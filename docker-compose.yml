@@ -50,7 +50,7 @@ services:
     build: ./frontend
     container_name: cloud_storage_frontend
     ports:
-      - "5173:5173"
+      - "5173:80"
     environment:
       VITE_API_URL: http://localhost:8080
     depends_on:

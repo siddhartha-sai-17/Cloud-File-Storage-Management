@@ -21,6 +21,9 @@ if 'current_folder_id' not in st.session_state:
     st.session_state.current_folder_id = None
 
 # --- Helper Functions ---
+def get_headers():
+    return {"Authorization": f"Bearer {st.session_state.token}"}
+
 def safe_request(func, *args, **kwargs):
     try:
         response = func(*args, **kwargs)
@@ -40,8 +43,8 @@ def safe_request(func, *args, **kwargs):
 def login_page():
     st.title("🔐 Login to Cloud Storage")
     with st.form("login_form"):
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        username = st.text_input("Username", placeholder="Enter your username")
+        password = st.text_input("Password", type="password", placeholder="Enter your password")
         submit = st.form_submit_button("Login")
         
         if submit:
@@ -62,9 +65,9 @@ def login_page():
 def register_page():
     st.title("📝 Create an Account")
     with st.form("register_form"):
-        username = st.text_input("Username")
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
+        username = st.text_input("Username", placeholder="Choose a username")
+        email = st.text_input("Email", placeholder="Enter your email")
+        password = st.text_input("Password", type="password", placeholder="Choose a password")
         submit = st.form_submit_button("Register")
         
         if submit:
