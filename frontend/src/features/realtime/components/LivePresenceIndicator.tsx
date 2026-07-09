@@ -11,7 +11,8 @@ export function LivePresenceIndicator({ currentPath = '/' }: LivePresenceIndicat
   // Group users by their activity status
   const activeUsers = presenceUsers.filter((u) => u.status !== 'IDLE');
 
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string) => {
+    if (!name) return '??';
     return name.slice(0, 2).toUpperCase();
   };
 

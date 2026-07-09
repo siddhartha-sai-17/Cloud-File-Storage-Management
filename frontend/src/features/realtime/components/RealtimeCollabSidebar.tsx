@@ -12,7 +12,8 @@ export function RealtimeCollabSidebar() {
   const { activities } = useLiveActivity(currentWorkspace?.id);
   const { queue } = useBackgroundJobs();
 
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string) => {
+    if (!name) return '??';
     return name.slice(0, 2).toUpperCase();
   };
 
