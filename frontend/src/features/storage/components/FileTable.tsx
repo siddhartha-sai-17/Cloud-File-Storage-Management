@@ -15,6 +15,69 @@ interface FileTableProps {
   onToggleStar: (id: number) => void;
 }
 
+const formatSize = (bytes: number | null) => {
+  if (bytes === null) return '—';
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+};
+
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return '—';
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return dateStr;
+  }
+};
+
+const getFileIconColor = (name: string, type: 'FILE' | 'FOLDER') => {
+  if (type === 'FOLDER') return 'file-folder';
+  const ext = name.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'txt':
+    case 'md':
+      return 'file-other';
+    case 'pdf':
+      return 'file-pdf';
+    case 'doc':
+    case 'docx':
+      return 'file-doc';
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'gif':
+    case 'svg':
+    case 'webp':
+      return 'file-image';
+    case 'mp4':
+    case 'mkv':
+    case 'mov':
+      return 'file-video';
+    case 'xls':
+    case 'xlsx':
+    case 'csv':
+      return 'file-sheet';
+    case 'zip':
+    case 'tar':
+    case 'gz':
+    case 'rar':
+    case '7z':
+      return 'file-zip';
+    default:
+      return 'file-other';
+  }
+};
+
 export function FileTable({
   items,
   selectedIds,
@@ -22,74 +85,13 @@ export function FileTable({
   onItemDoubleClick,
   onContextMenu,
 }: FileTableProps) {
-  const ROW_HEIGHT = 56;
+  const ROW_HEIGHT = 52;
 
   // Integrate virtualized list hook
   const { containerRef, virtualItems } = useVirtualList(items, {
     itemHeight: ROW_HEIGHT,
     overscan: 10,
   });
-
-  const formatSize = (bytes: number | null) => {
-    if (bytes === null) return '-';
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-  };
-
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return '-';
-    try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return dateStr;
-    }
-  };
-
-  const getFileIconColor = (name: string, type: 'FILE' | 'FOLDER') => {
-    if (type === 'FOLDER') return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20';
-    const ext = name.split('.').pop()?.toLowerCase();
-    switch (ext) {
-      case 'txt':
-      case 'md':
-      case 'pdf':
-      case 'doc':
-      case 'docx':
-        return 'text-blue-400 bg-blue-500/10 border-blue-500/20';
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-      case 'svg':
-      case 'webp':
-        return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
-      case 'mp4':
-      case 'mkv':
-      case 'mov':
-        return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
-      case 'xls':
-      case 'xlsx':
-      case 'csv':
-        return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
-      case 'zip':
-      case 'tar':
-      case 'gz':
-      case 'rar':
-      case '7z':
-        return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
-      default:
-        return 'text-gray-400 bg-gray-500/10 border-gray-500/20';
-    }
-  };
 
   const startIndex = virtualItems.length > 0 ? virtualItems[0].index : 0;
   const endIndex = virtualItems.length > 0 ? virtualItems[virtualItems.length - 1].index : 0;
@@ -100,22 +102,22 @@ export function FileTable({
   return (
     <div 
       ref={containerRef}
-      className="w-full max-h-[600px] overflow-y-auto rounded-xl border border-[#1e293b]/40 bg-[#151b2f]/60 backdrop-blur-sm relative shadow-xl"
+      className="w-full max-h-[600px] overflow-y-auto rounded-[18px] border border-white/[0.05] bg-[#0A0E1A]/40 backdrop-blur-md relative shadow-vault"
       role="region"
       aria-label="Files table list viewer"
     >
-      <table className="w-full border-collapse text-left text-sm select-none">
-        <thead className="sticky top-0 z-10 bg-[#111827] border-b border-[#1e293b]/50 shadow-[0_1px_0_0_rgba(0,0,0,0.1)]">
-          <tr className="font-semibold text-gray-400 text-xs uppercase tracking-wider">
-            <th className="p-3.5 pl-4">Name</th>
-            <th className="p-3.5">Type</th>
-            <th className="p-3.5">Size</th>
-            <th className="p-3.5">Uploaded Date</th>
-            <th className="p-3.5 text-center w-12">Star</th>
-            <th className="p-3.5 text-center w-12 pl-1">Actions</th>
+      <table className="w-full border-collapse text-left text-[13px] select-none">
+        <thead className="sticky top-0 z-10 bg-[#0F172A] border-b border-white/[0.05] shadow-[0_1px_0_0_rgba(0,0,0,0.2)]">
+          <tr className="label-caps">
+            <th className="p-3.5 pl-5 font-bold tracking-[0.1em] text-[#475569]">Name</th>
+            <th className="p-3.5 font-bold tracking-[0.1em] text-[#475569]">Type</th>
+            <th className="p-3.5 font-bold tracking-[0.1em] text-[#475569]">Size</th>
+            <th className="p-3.5 font-bold tracking-[0.1em] text-[#475569]">Uploaded Date</th>
+            <th className="p-3.5 text-center w-12 font-bold tracking-[0.1em] text-[#475569]">Star</th>
+            <th className="p-3.5 text-center w-12 pl-1 font-bold tracking-[0.1em] text-[#475569]">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#1e293b]/30">
+        <tbody className="divide-y divide-white/[0.04]">
           {/* Top Virtual Spacer */}
           {topSpacerHeight > 0 && (
             <tr style={{ height: `${topSpacerHeight}px` }}>
@@ -127,7 +129,7 @@ export function FileTable({
           {virtualItems.map(({ item }) => {
             const isSelected = selectedIds.has(item.id);
             const FileIcon = getFileIcon(item.name, item.type);
-            const iconStyles = getFileIconColor(item.name, item.type);
+            const badgeClass = getFileIconColor(item.name, item.type);
             
             return (
               <tr
@@ -142,40 +144,42 @@ export function FileTable({
                 className={cn(
                   "group cursor-pointer transition-all duration-150 border-l-2",
                   isSelected 
-                    ? "bg-[#6366f1]/10 border-[#6366f1] text-white" 
-                    : "border-transparent hover:bg-white/5 text-gray-300 hover:text-white"
+                    ? "bg-[#6366F1]/10 border-[#6366F1] text-white" 
+                    : "border-transparent hover:bg-white/[0.03] text-[#94A3B8] hover:text-white"
                 )}
               >
-                <td className="p-3 pl-4">
+                <td className="p-2 pl-5">
                   <div className="flex items-center gap-3 font-semibold overflow-hidden max-w-xs sm:max-w-md">
-                    <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg border shrink-0", iconStyles)}>
-                      <FileIcon className="h-4.5 w-4.5" />
+                    <div className={cn("flex h-8 w-8 items-center justify-center rounded-[8px] border shrink-0", badgeClass)}>
+                      <FileIcon className="h-4 w-4" />
                     </div>
                     <span className="truncate">{item.name}</span>
                   </div>
                 </td>
-                <td className="p-3 text-gray-400 font-medium">
+                <td className="p-2 text-[#475569] font-semibold">
                   {item.type === 'FOLDER' ? 'Folder' : item.name.split('.').pop()?.toUpperCase() || 'File'}
                 </td>
-                <td className="p-3 text-gray-400 font-semibold">{formatSize(item.size)}</td>
-                <td className="p-3 text-gray-400 font-medium">{formatDate(item.createdDate)}</td>
-                <td className="p-3 text-center">
+                <td className="p-2 text-[#94A3B8] font-bold tabular-nums">{formatSize(item.size)}</td>
+                <td className="p-2 text-[#64748B] font-medium">{formatDate(item.createdDate)}</td>
+                <td className="p-2 text-center">
                   {item.type === 'FILE' && (
                     <FavoriteToggle fileId={item.id} initialStarred={item.starred} />
                   )}
                 </td>
-                <td className="p-3 text-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onContextMenu(e, item);
-                    }}
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
+                <td className="p-2 text-center">
+                  <div className="flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-[#475569] hover:text-white hover:bg-white/[0.06] rounded-[6px]"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onContextMenu(e, item);
+                      }}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </td>
               </tr>
             );
@@ -192,4 +196,5 @@ export function FileTable({
     </div>
   );
 }
+
 export default FileTable;

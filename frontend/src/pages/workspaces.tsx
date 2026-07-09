@@ -24,7 +24,7 @@ import { useWorkspace } from '@/contexts/WorkspaceProvider';
 import { useAuth } from '@/contexts/AuthProvider';
 import { workspaceService } from '@/features/workspaces/services/workspaceService';
 import type { WorkspaceRole, WorkspaceDto } from '@/features/workspaces/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/utils/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,6 +44,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
+import { motion } from 'framer-motion';
 
 export function WorkspacesPage() {
   const queryClient = useQueryClient();
@@ -246,40 +247,47 @@ export function WorkspacesPage() {
   });
 
   const formatSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return '0 B';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-500 to-emerald-500 bg-clip-text text-transparent">
-            Workspace Management
+    <div className="max-w-[1400px] mx-auto space-y-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-1"
+        >
+          <p className="label-caps font-bold">Collaborative Spaces</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+            <Users className="h-7 w-7 text-[#6366F1]" />
+            Workspace Settings
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-[#64748B] mt-1">
             Create, collaborate, and manage custom team workspaces and permissions.
           </p>
-        </div>
+        </motion.div>
         <Button
           onClick={() => setIsCreateOpen(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md flex items-center gap-2"
+          className="bg-[#6366F1] hover:bg-[#5558DD] text-white font-semibold rounded-[10px] h-9 gap-1.5 shadow-[0_0_16px_rgba(99,102,241,0.25)] border-0 self-start md:self-center transition-all"
         >
-          <Plus className="h-4 w-4" /> Create Workspace
+          <Plus className="h-4 w-4" />
+          <span>Create Workspace</span>
         </Button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-muted mb-6 overflow-x-auto gap-4 scrollbar-none">
+      <div className="flex border-b border-white/[0.05] overflow-x-auto gap-4 shrink-0 scrollbar-none">
         <button
           onClick={() => setActiveTab('all')}
-          className={`pb-3 text-sm font-semibold border-b-2 transition-all px-1 whitespace-nowrap ${
+          className={`pb-3 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-all px-1 whitespace-nowrap ${
             activeTab === 'all'
-              ? 'border-indigo-600 text-indigo-600'
-              : 'border-transparent text-muted-foreground hover:text-foreground'
+              ? 'border-[#6366F1] text-white'
+              : 'border-transparent text-[#475569] hover:text-[#94A3B8]'
           }`}
         >
           All Workspaces
@@ -288,40 +296,40 @@ export function WorkspacesPage() {
           <>
             <button
               onClick={() => setActiveTab('members')}
-              className={`pb-3 text-sm font-semibold border-b-2 transition-all px-1 whitespace-nowrap ${
+              className={`pb-3 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-all px-1 whitespace-nowrap ${
                 activeTab === 'members'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ? 'border-[#6366F1] text-white'
+                  : 'border-transparent text-[#475569] hover:text-[#94A3B8]'
               }`}
             >
               Members ({members.length})
             </button>
             <button
               onClick={() => setActiveTab('invitations')}
-              className={`pb-3 text-sm font-semibold border-b-2 transition-all px-1 whitespace-nowrap ${
+              className={`pb-3 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-all px-1 whitespace-nowrap ${
                 activeTab === 'invitations'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ? 'border-[#6366F1] text-white'
+                  : 'border-transparent text-[#475569] hover:text-[#94A3B8]'
               }`}
             >
               Invitations
             </button>
             <button
               onClick={() => setActiveTab('activity')}
-              className={`pb-3 text-sm font-semibold border-b-2 transition-all px-1 whitespace-nowrap ${
+              className={`pb-3 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-all px-1 whitespace-nowrap ${
                 activeTab === 'activity'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ? 'border-[#6366F1] text-white'
+                  : 'border-transparent text-[#475569] hover:text-[#94A3B8]'
               }`}
             >
               Activity Timeline
             </button>
             <button
               onClick={() => setActiveTab('quota')}
-              className={`pb-3 text-sm font-semibold border-b-2 transition-all px-1 whitespace-nowrap ${
+              className={`pb-3 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-all px-1 whitespace-nowrap ${
                 activeTab === 'quota'
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ? 'border-[#6366F1] text-white'
+                  : 'border-transparent text-[#475569] hover:text-[#94A3B8]'
               }`}
             >
               Quota & Usage
@@ -335,52 +343,57 @@ export function WorkspacesPage() {
         {/* Tab 1: All Workspaces */}
         {activeTab === 'all' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {workspaces.map((ws) => {
+            {workspaces.map((ws, i) => {
               const isCurrent = ws.id === activeWorkspaceId;
               const isOwner = ws.ownerUsername === user?.username;
               const isPersonal = ws.workspaceType === 'PERSONAL';
               const usagePercent = Math.min(100, (ws.storageUsed / ws.storageQuota) * 100);
 
               return (
-                <Card
+                <motion.div
                   key={ws.id}
-                  className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg border ${
-                    isCurrent ? 'ring-2 ring-indigo-500/50 border-indigo-500' : ''
-                  }`}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: i * 0.05 }}
+                  className={cn(
+                    "vault-card flex flex-col justify-between overflow-hidden relative",
+                    isCurrent && "border-[#6366F1] bg-[#6366F1]/5 shadow-[0_0_16px_rgba(99,102,241,0.06)]"
+                  )}
                 >
-                  <CardHeader className="pb-3">
+                  <div className="p-5 space-y-4">
                     <div className="flex items-start justify-between">
-                      <div className="truncate">
+                      <div className="truncate space-y-2">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider text-white ${
-                              isPersonal ? 'bg-indigo-600' : 'bg-emerald-600'
-                            }`}
+                            className={cn(
+                              "px-2 py-0.5 text-[9px] font-bold rounded-[5px] uppercase tracking-wide text-white border",
+                              isPersonal ? 'bg-indigo-600/10 border-indigo-500/20 text-indigo-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                            )}
                           >
                             {ws.workspaceType}
                           </span>
                           {ws.status === 'ARCHIVED' && (
-                            <span className="px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-wider bg-amber-500 text-white">
+                            <span className="px-2 py-0.5 text-[9px] font-bold rounded-[5px] uppercase tracking-wide bg-amber-500/10 border border-amber-500/20 text-amber-400">
                               ARCHIVED
                             </span>
                           )}
                         </div>
-                        <CardTitle className="text-xl font-bold truncate mt-2">{ws.name}</CardTitle>
-                        <CardDescription className="line-clamp-2 mt-1 h-10">
+                        <h2 className="text-[17px] font-bold text-white truncate">{ws.name}</h2>
+                        <p className="text-[12px] text-[#94A3B8] line-clamp-2 h-10 leading-relaxed">
                           {ws.description || 'No description provided.'}
-                        </CardDescription>
+                        </p>
                       </div>
 
                       {/* Dropdown Action Menu */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#475569] hover:text-white hover:bg-white/[0.05] rounded-[8px]">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => switchWorkspace(ws.id)} className="cursor-pointer">
-                            <Check className="h-4 w-4 mr-2" /> Active Workspace
+                        <DropdownMenuContent align="end" className="bg-[#111827] border-white/[0.08] text-[#94A3B8] rounded-[12px] p-1 shadow-vault-xl">
+                          <DropdownMenuItem onClick={() => switchWorkspace(ws.id)} className="cursor-pointer py-2 px-2.5 rounded-[8px] hover:bg-white/[0.05] hover:text-white">
+                            <Check className="h-4 w-4 mr-2 text-[#818CF8]" /> Activate
                           </DropdownMenuItem>
                           {isOwner && !isPersonal && (
                             <>
@@ -391,33 +404,33 @@ export function WorkspacesPage() {
                                   setWsDesc(ws.description || '');
                                   setIsEditOpen(true);
                                 }}
-                                className="cursor-pointer"
+                                className="cursor-pointer py-2 px-2.5 rounded-[8px] hover:bg-white/[0.05] hover:text-white"
                               >
-                                <Settings className="h-4 w-4 mr-2" /> Edit Workspace
+                                <Settings className="h-4 w-4 mr-2" /> Edit Details
                               </DropdownMenuItem>
                               {ws.status === 'ACTIVE' ? (
                                 <DropdownMenuItem
                                   onClick={() => archiveMutation.mutate(ws.id)}
-                                  className="cursor-pointer text-amber-600"
+                                  className="cursor-pointer text-amber-400 py-2 px-2.5 rounded-[8px] hover:bg-amber-500/10"
                                 >
                                   <Archive className="h-4 w-4 mr-2" /> Archive
                                 </DropdownMenuItem>
                               ) : (
                                 <DropdownMenuItem
                                   onClick={() => restoreMutation.mutate(ws.id)}
-                                  className="cursor-pointer text-emerald-600"
+                                  className="cursor-pointer text-emerald-400 py-2 px-2.5 rounded-[8px] hover:bg-emerald-500/10"
                                 >
                                   <RotateCcw className="h-4 w-4 mr-2" /> Restore
                                 </DropdownMenuItem>
                               )}
-                              <DropdownMenuSeparator />
+                              <DropdownMenuSeparator className="bg-white/[0.04]" />
                               <DropdownMenuItem
                                 onClick={() => {
                                   if (confirm(`Are you absolutely sure you want to delete "${ws.name}"? This cannot be undone.`)) {
                                     deleteMutation.mutate(ws.id);
                                   }
                                 }}
-                                className="cursor-pointer text-destructive"
+                                className="cursor-pointer text-rose-400 py-2 px-2.5 rounded-[8px] hover:bg-rose-500/10"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" /> Delete
                               </DropdownMenuItem>
@@ -430,34 +443,33 @@ export function WorkspacesPage() {
                                   leaveMutation.mutate(ws.id);
                                 }
                               }}
-                              className="cursor-pointer text-destructive"
+                              className="cursor-pointer text-rose-400 py-2 px-2.5 rounded-[8px] hover:bg-rose-500/10"
                             >
-                              <LogOut className="h-4 w-4 mr-2" /> Leave Workspace
+                              <LogOut className="h-4 w-4 mr-2" /> Leave
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between text-[11px] text-[#64748B] font-semibold">
                         <span className="flex items-center gap-1">
-                          <HardDrive className="h-3 w-3" /> Quota
+                          <HardDrive className="h-3 w-3" /> Storage Utilized
                         </span>
-                        <span>
+                        <span className="text-[#94A3B8]">
                           {formatSize(ws.storageUsed)} of {formatSize(ws.storageQuota)}
                         </span>
                       </div>
-                      <Progress value={usagePercent} className="h-1.5 bg-muted" />
+                      <Progress value={usagePercent} className="h-1.5 bg-white/[0.04]" />
                     </div>
+                  </div>
 
-                    <div className="flex items-center justify-between text-xs pt-2 border-t border-muted">
-                      <span className="text-muted-foreground">Owner: <strong className="text-foreground">{ws.ownerUsername}</strong></span>
-                      <span className="text-muted-foreground">Members limit: <strong className="text-foreground">{ws.memberLimit}</strong></span>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <div className="flex items-center justify-between text-[11px] py-3 px-5 border-t border-white/[0.05] bg-white/[0.01] text-[#475569] font-bold">
+                    <span>Owner: <strong className="text-[#94A3B8]">{ws.ownerUsername}</strong></span>
+                    <span>Limit: <strong className="text-[#94A3B8]">{ws.memberLimit} users</strong></span>
+                  </div>
+                </motion.div>
               );
             })}
           </div>
@@ -468,59 +480,59 @@ export function WorkspacesPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold">Workspace Members</h3>
-                <p className="text-xs text-muted-foreground">Manage active collaborators and role hierarchy.</p>
+                <h3 className="text-lg font-bold text-white">Workspace Members</h3>
+                <p className="text-xs text-[#64748B] mt-0.5">Manage active collaborators and role hierarchy.</p>
               </div>
               {hasPermission('TEAM_INVITE') && (
                 <div className="flex gap-2">
-                  <Button onClick={() => setIsAddMemberOpen(true)} variant="outline" size="sm" className="flex items-center gap-2">
-                    <UserPlus className="h-4 w-4" /> Add Directly
+                  <Button onClick={() => setIsAddMemberOpen(true)} variant="outline" size="sm" className="flex items-center gap-2 h-8.5 rounded-[8px] border-white/[0.06] bg-[#0F172A] hover:bg-[#161F2F] text-xs font-semibold text-[#94A3B8] hover:text-white">
+                    <UserPlus className="h-4 w-4 text-[#818CF8]" /> Add Directly
                   </Button>
-                  <Button onClick={() => setIsInviteOpen(true)} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2">
+                  <Button onClick={() => setIsInviteOpen(true)} size="sm" className="bg-[#6366F1] hover:bg-[#5558DD] text-white font-semibold rounded-[8px] h-8.5 text-xs flex items-center gap-2 border-0">
                     <Mail className="h-4 w-4" /> Invite Collaborator
                   </Button>
                 </div>
               )}
             </div>
 
-            <div className="border rounded-lg overflow-hidden bg-card">
-              <table className="w-full text-left border-collapse">
+            <div className="border border-white/[0.06] rounded-[16px] overflow-hidden bg-[#111827]">
+              <table className="w-full text-left border-collapse text-[13px]">
                 <thead>
-                  <tr className="bg-muted/50 border-b text-xs font-semibold text-muted-foreground uppercase">
-                    <th className="px-6 py-3">Member</th>
-                    <th className="px-6 py-3">Email</th>
-                    <th className="px-6 py-3">Role</th>
-                    <th className="px-6 py-3">Status</th>
-                    {hasPermission('TEAM_REMOVE') && <th className="px-6 py-3 text-right">Actions</th>}
+                  <tr className="bg-[#0F172A] border-b border-white/[0.05] label-caps">
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Member</th>
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Email</th>
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Role</th>
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Status</th>
+                    {hasPermission('TEAM_REMOVE') && <th className="px-6 py-3.5 text-right font-bold tracking-[0.1em] text-[#475569]">Actions</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y text-sm">
+                <tbody className="divide-y divide-white/[0.04]">
                   {members.map((member) => {
                     const isOwner = member.username === currentWorkspace?.ownerUsername;
                     const isSelf = member.username === user?.username;
 
                     return (
-                      <tr key={member.id} className="hover:bg-muted/20 transition-all">
+                      <tr key={member.id} className="hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-4 flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs uppercase">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#6366F1]/15 text-[#818CF8] font-bold text-xs uppercase border border-[#6366F1]/20">
                             {member.username.substring(0, 2)}
                           </div>
                           <div>
-                            <span className="font-semibold">{member.username}</span>
-                            {isSelf && <span className="ml-2 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">YOU</span>}
+                            <span className="font-bold text-white">{member.username}</span>
+                            {isSelf && <span className="ml-2 text-[9px] bg-[#6366F1]/12 border border-[#6366F1]/25 text-[#818CF8] px-1.5 py-0.5 rounded-[4px] font-bold">YOU</span>}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-muted-foreground">{member.email}</td>
+                        <td className="px-6 py-4 text-[#94A3B8] font-medium">{member.email}</td>
                         <td className="px-6 py-4">
                           {isOwner ? (
-                            <span className="flex items-center gap-1.5 text-indigo-600 font-bold text-xs">
-                              <Shield className="h-3.5 w-3.5" /> WORKSPACE_OWNER
+                            <span className="flex items-center gap-1.5 text-indigo-400 font-bold text-xs">
+                              <Shield className="h-3.5 w-3.5" /> OWNER
                             </span>
                           ) : hasPermission('TEAM_EDIT') && !isSelf ? (
                             <select
                               value={member.role}
                               onChange={(e) => updateRoleMutation.mutate({ userId: member.userId, role: e.target.value as WorkspaceRole })}
-                              className="border rounded bg-background px-2 py-1 text-xs focus:ring-1 focus:ring-primary focus:outline-none"
+                              className="border border-white/[0.08] rounded-[8px] px-2.5 py-1 text-xs text-[#94A3B8] font-semibold bg-[#0F172A] focus:ring-1 focus:ring-[#6366F1]/40 focus:outline-none"
                             >
                               <option value="GUEST">GUEST</option>
                               <option value="VIEWER">VIEWER</option>
@@ -528,12 +540,12 @@ export function WorkspacesPage() {
                               <option value="MANAGER">MANAGER</option>
                             </select>
                           ) : (
-                            <span className="text-muted-foreground text-xs font-semibold">{member.role}</span>
+                            <span className="text-[#64748B] text-xs font-semibold">{member.role}</span>
                           )}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                            member.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                          <span className={`px-2.5 py-0.5 text-[9px] font-bold rounded-[5px] uppercase border ${
+                            member.status === 'ACTIVE' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
                           }`}>
                             {member.status}
                           </span>
@@ -549,7 +561,7 @@ export function WorkspacesPage() {
                                     removeMemberMutation.mutate(member.userId);
                                   }
                                 }}
-                                className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                className="h-8 w-8 text-rose-400 hover:bg-rose-500/10 rounded-[6px]"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -570,63 +582,63 @@ export function WorkspacesPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold">Workspace Invitations</h3>
-                <p className="text-xs text-muted-foreground">List collaborator email invites sent to team members.</p>
+                <h3 className="text-lg font-bold text-white">Workspace Invitations</h3>
+                <p className="text-xs text-[#64748B] mt-0.5">List collaborator email invites sent to team members.</p>
               </div>
               {hasPermission('TEAM_INVITE') && (
-                <Button onClick={() => setIsInviteOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2">
+                <Button onClick={() => setIsInviteOpen(true)} className="bg-[#6366F1] hover:bg-[#5558DD] text-white font-semibold rounded-[8px] h-8.5 text-xs flex items-center gap-2 border-0">
                   <Mail className="h-4 w-4" /> Invite Collaborator
                 </Button>
               )}
             </div>
 
-            <div className="border rounded-lg overflow-hidden bg-card">
-              <table className="w-full text-left border-collapse">
+            <div className="border border-white/[0.06] rounded-[16px] overflow-hidden bg-[#111827]">
+              <table className="w-full text-left border-collapse text-[13px]">
                 <thead>
-                  <tr className="bg-muted/50 border-b text-xs font-semibold text-muted-foreground uppercase">
-                    <th className="px-6 py-3">Invitee Email</th>
-                    <th className="px-6 py-3">Invited By</th>
-                    <th className="px-6 py-3">Expiry Date</th>
-                    <th className="px-6 py-3">Status</th>
-                    {hasPermission('TEAM_INVITE') && <th className="px-6 py-3 text-right">Actions</th>}
+                  <tr className="bg-[#0F172A] border-b border-white/[0.05] label-caps">
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Invitee Email</th>
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Invited By</th>
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Expiry Date</th>
+                    <th className="px-6 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Status</th>
+                    {hasPermission('TEAM_INVITE') && <th className="px-6 py-3.5 text-right font-bold tracking-[0.1em] text-[#475569]">Actions</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y text-sm">
+                <tbody className="divide-y divide-white/[0.04]">
                   {invitations.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="text-center py-8 text-muted-foreground">
-                        No invitations found.
+                      <td colSpan={5} className="text-center py-8 text-xs text-[#475569] font-medium">
+                        No active invitations found.
                       </td>
                     </tr>
                   ) : (
                     invitations.map((inv) => (
-                      <tr key={inv.id} className="hover:bg-muted/20 transition-all">
-                        <td className="px-6 py-4 font-semibold">{inv.email}</td>
-                        <td className="px-6 py-4 text-muted-foreground">{inv.createdByUsername}</td>
-                        <td className="px-6 py-4 text-muted-foreground flex items-center gap-1.5">
+                      <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="px-6 py-4 font-bold text-white">{inv.email}</td>
+                        <td className="px-6 py-4 text-[#94A3B8] font-medium">{inv.createdByUsername}</td>
+                        <td className="px-6 py-4 text-[#64748B] font-semibold inline-flex items-center gap-1.5 mt-2">
                           <Clock className="h-3.5 w-3.5" />
                           {new Date(inv.expiresAt).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                          <span className={`px-2.5 py-0.5 text-[9px] font-bold rounded-[5px] uppercase border ${
                             inv.status === 'PENDING'
-                              ? 'bg-amber-100 text-amber-700'
+                              ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
                               : inv.status === 'ACCEPTED'
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : 'bg-red-100 text-red-700'
+                              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                              : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
                           }`}>
                             {inv.status}
                           </span>
                         </td>
                         {hasPermission('TEAM_INVITE') && (
-                          <td className="px-6 py-4 text-right flex justify-end gap-2">
+                          <td className="px-6 py-4 text-right">
                             {inv.status === 'PENDING' && (
-                              <>
+                              <div className="flex justify-end gap-2">
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   onClick={() => resendInviteMutation.mutate(inv.id)}
-                                  className="h-8 text-xs"
+                                  className="h-7 text-[11px] font-semibold border-white/[0.06] bg-[#0F172A] text-[#94A3B8] hover:text-white rounded-[6px]"
                                 >
                                   Resend
                                 </Button>
@@ -634,11 +646,11 @@ export function WorkspacesPage() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => cancelInviteMutation.mutate(inv.id)}
-                                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                  className="h-7 w-7 text-rose-400 hover:bg-rose-500/10 rounded-[6px]"
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-3.5 w-3.5" />
                                 </Button>
-                              </>
+                              </div>
                             )}
                           </td>
                         )}
@@ -655,29 +667,29 @@ export function WorkspacesPage() {
         {activeTab === 'activity' && activeWorkspaceId && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold">Activity Logs</h3>
-              <p className="text-xs text-muted-foreground">Audit event log history of collaborator operations.</p>
+              <h3 className="text-lg font-bold text-white">Activity Logs</h3>
+              <p className="text-xs text-[#64748B] mt-0.5">Audit event log history of collaborator operations.</p>
             </div>
 
-            <div className="border rounded-lg bg-card p-6">
+            <div className="border border-white/[0.06] rounded-[16px] bg-[#111827] p-6 shadow-vault">
               {activities.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground flex flex-col items-center justify-center gap-2">
-                  <Activity className="h-8 w-8 text-muted-foreground/50" />
+                <div className="text-center py-8 text-xs text-[#475569] font-medium flex flex-col items-center justify-center gap-2">
+                  <Activity className="h-6 w-6 text-[#475569]/60" />
                   <span>No activities recorded yet.</span>
                 </div>
               ) : (
-                <div className="relative border-l pl-6 space-y-6">
+                <div className="relative border-l border-white/[0.05] pl-6 space-y-6">
                   {activities.map((act) => (
                     <div key={act.id} className="relative">
-                      <span className="absolute -left-[31px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-100 border-2 border-indigo-600" />
+                      <span className="absolute -left-[30px] top-1.5 flex h-2 w-2 items-center justify-center rounded-full bg-[#6366F1] ring-4 ring-[#6366F1]/15" />
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                         <div>
-                          <p className="font-semibold text-sm">
-                            <span className="text-indigo-600">{act.username}</span> performed {act.activityType.replace(/_/g, ' ')}
+                          <p className="font-bold text-white text-sm">
+                            <span className="text-[#818CF8] font-bold">{act.username}</span> performed {act.activityType.replace(/_/g, ' ')}
                           </p>
-                          {act.result && <p className="text-xs text-muted-foreground mt-0.5">{act.result}</p>}
+                          {act.result && <p className="text-xs text-[#64748B] mt-1 font-medium">{act.result}</p>}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-3 text-[11px] text-[#475569] font-semibold">
                           {act.ip && <span>IP: {act.ip}</span>}
                           <span>{new Date(act.createdAt).toLocaleString()}</span>
                         </div>
@@ -694,54 +706,52 @@ export function WorkspacesPage() {
         {activeTab === 'quota' && activeWorkspaceId && quotaDetails && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold">Quota & Storage Limits</h3>
-              <p className="text-xs text-muted-foreground">Overview of storage quota allocations and membership counts.</p>
+              <h3 className="text-lg font-bold text-white">Quota & Storage Limits</h3>
+              <p className="text-xs text-[#64748B] mt-0.5">Overview of storage quota allocations and membership counts.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-md font-bold flex items-center gap-2">
-                    <HardDrive className="h-4 w-4 text-indigo-600" /> Storage Capacity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <span className="text-3xl font-extrabold">{quotaDetails.usagePercentage.toFixed(1)}%</span>
-                      <span className="text-xs text-muted-foreground ml-2">used</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {formatSize(quotaDetails.storageUsed)} / {formatSize(quotaDetails.storageQuota)}
-                    </span>
+              <div className="vault-card p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <HardDrive className="h-4.5 w-4.5 text-[#818CF8]" />
+                    <span className="text-sm font-bold text-white">Storage Capacity</span>
                   </div>
-                  <Progress value={quotaDetails.usagePercentage} className="h-2 bg-muted" />
-                  <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-lg border border-amber-200/50">
-                    <AlertTriangle className="h-4 w-4 shrink-0" />
-                    <span>Quota limits are verified server-side. Please manage file versions if storage is running low.</span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-[5px] bg-[#6366F1]/10 border border-[#6366F1]/20 text-[#818CF8] uppercase tracking-wide">
+                    {quotaDetails.usagePercentage.toFixed(1)}% Used
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <Progress value={quotaDetails.usagePercentage} className="h-1.5 bg-white/[0.04]" />
+                  <div className="flex justify-between text-xs text-[#475569] font-semibold">
+                    <span>{formatSize(quotaDetails.storageUsed)} Used</span>
+                    <span>{formatSize(quotaDetails.storageQuota)} Total</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="flex items-start gap-2.5 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-[12px] leading-relaxed">
+                  <AlertTriangle className="h-4.5 w-4.5 shrink-0 mt-0.5" />
+                  <span>Quota limits are verified server-side. Please manage file versions if storage is running low.</span>
+                </div>
+              </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-md font-bold flex items-center gap-2">
-                    <Users className="h-4 w-4 text-emerald-600" /> Collaborator Limits
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <span className="text-3xl font-extrabold">{quotaDetails.memberCount}</span>
-                      <span className="text-xs text-muted-foreground ml-2">active members</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      Limit: {quotaDetails.memberLimit} members
-                    </span>
+              <div className="vault-card p-5 space-y-4 flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4.5 w-4.5 text-emerald-400" />
+                    <span className="text-sm font-bold text-white">Collaborator Limits</span>
                   </div>
-                  <Progress value={(quotaDetails.memberCount / quotaDetails.memberLimit) * 100} className="h-2 bg-muted" />
-                </CardContent>
-              </Card>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-[5px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 uppercase tracking-wide">
+                    {quotaDetails.memberCount} Users
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <Progress value={(quotaDetails.memberCount / quotaDetails.memberLimit) * 100} className="h-1.5 bg-white/[0.04]" />
+                  <div className="flex justify-between text-xs text-[#475569] font-semibold">
+                    <span>{quotaDetails.memberCount} active members</span>
+                    <span>Limit: {quotaDetails.memberLimit} members</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -750,46 +760,49 @@ export function WorkspacesPage() {
       {/* dialogs */}
       {/* 1. Create Workspace Dialog */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent>
+        <DialogContent className="bg-[#111827] border-white/[0.08] text-white rounded-[18px] p-6 shadow-vault-xl">
           <DialogHeader>
-            <DialogTitle>Create Team Workspace</DialogTitle>
-            <DialogDescription>Setup a dedicated workspace for shared folders and real-time collaboration.</DialogDescription>
+            <DialogTitle className="text-lg font-bold text-white">Create Team Workspace</DialogTitle>
+            <DialogDescription className="text-xs text-[#64748B]">Setup a dedicated workspace for shared folders and real-time collaboration.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-1">
-              <Label htmlFor="create-ws-name">Workspace Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="create-ws-name" className="label-caps">Workspace Name</Label>
               <Input
                 id="create-ws-name"
                 value={wsName}
                 onChange={(e) => setWsName(e.target.value)}
                 placeholder="e.g. Finance Team"
+                className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
               />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="create-ws-desc">Description</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="create-ws-desc" className="label-caps">Description</Label>
               <Input
                 id="create-ws-desc"
                 value={wsDesc}
                 onChange={(e) => setWsDesc(e.target.value)}
                 placeholder="Brief summary of workspace contents"
+                className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
               />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="create-ws-quota">Quota Limit (GB)</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="create-ws-quota" className="label-caps">Quota Limit (GB)</Label>
               <Input
                 id="create-ws-quota"
                 type="number"
                 value={wsQuota}
                 onChange={(e) => setWsQuota(parseInt(e.target.value, 10))}
+                className="bg-[#0F172A] border-white/10 text-white rounded-[10px] h-10 text-[13px]"
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
+          <DialogFooter className="gap-2 sm:gap-0 mt-3">
+            <Button variant="ghost" onClick={() => setIsCreateOpen(false)} className="text-[#64748B] hover:text-white hover:bg-white/[0.05] rounded-[10px] h-10">Cancel</Button>
             <Button
               onClick={() => createMutation.mutate({ name: wsName, description: wsDesc, storageQuota: wsQuota * 1024 * 1024 * 1024 })}
               disabled={!wsName.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558DD] hover:to-[#7C3AED] text-white font-semibold rounded-[10px] border-0 h-10 px-5 shadow-lg shadow-indigo-600/15"
             >
               Create Workspace
             </Button>
@@ -799,35 +812,37 @@ export function WorkspacesPage() {
 
       {/* 2. Edit Workspace Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent>
+        <DialogContent className="bg-[#111827] border-white/[0.08] text-white rounded-[18px] p-6 shadow-vault-xl">
           <DialogHeader>
-            <DialogTitle>Edit Workspace Details</DialogTitle>
-            <DialogDescription>Modify workspace name and description description fields.</DialogDescription>
+            <DialogTitle className="text-lg font-bold text-white">Edit Workspace Details</DialogTitle>
+            <DialogDescription className="text-xs text-[#64748B]">Modify workspace name and description fields.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-1">
-              <Label htmlFor="edit-ws-name">Workspace Name</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ws-name" className="label-caps">Workspace Name</Label>
               <Input
                 id="edit-ws-name"
                 value={wsName}
                 onChange={(e) => setWsName(e.target.value)}
+                className="bg-[#0F172A] border-white/10 text-white rounded-[10px] h-10 text-[13px]"
               />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="edit-ws-desc">Description</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-ws-desc" className="label-caps">Description</Label>
               <Input
                 id="edit-ws-desc"
                 value={wsDesc}
                 onChange={(e) => setWsDesc(e.target.value)}
+                className="bg-[#0F172A] border-white/10 text-white rounded-[10px] h-10 text-[13px]"
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+          <DialogFooter className="gap-2 sm:gap-0 mt-3">
+            <Button variant="ghost" onClick={() => setIsEditOpen(false)} className="text-[#64748B] hover:text-white hover:bg-white/[0.05] rounded-[10px] h-10">Cancel</Button>
             <Button
               onClick={() => updateMutation.mutate({ id: selectedWs!.id, name: wsName, description: wsDesc })}
               disabled={!wsName.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558DD] hover:to-[#7C3AED] text-white font-semibold rounded-[10px] border-0 h-10 px-5 shadow-lg shadow-indigo-600/15"
             >
               Save Changes
             </Button>
@@ -837,29 +852,30 @@ export function WorkspacesPage() {
 
       {/* 3. Send Invite Dialog */}
       <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
-        <DialogContent>
+        <DialogContent className="bg-[#111827] border-white/[0.08] text-white rounded-[18px] p-6 shadow-vault-xl">
           <DialogHeader>
-            <DialogTitle>Invite Collaborator</DialogTitle>
-            <DialogDescription>Invite a user by email to join the workspace.</DialogDescription>
+            <DialogTitle className="text-lg font-bold text-white">Invite Collaborator</DialogTitle>
+            <DialogDescription className="text-xs text-[#64748B]">Invite a user by email to join the workspace.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-1">
-              <Label htmlFor="invite-email">User Email</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="invite-email" className="label-caps">User Email</Label>
               <Input
                 id="invite-email"
                 type="email"
                 placeholder="colleague@company.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
+                className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
               />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="invite-role">Collaborator Role</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="invite-role" className="label-caps">Collaborator Role</Label>
               <select
                 id="invite-role"
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value as WorkspaceRole)}
-                className="w-full border rounded bg-background px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+                className="w-full border border-white/[0.08] rounded-[10px] px-3 py-2 text-xs text-[#94A3B8] font-semibold bg-[#0F172A] focus:outline-none mt-0.5"
               >
                 <option value="GUEST">GUEST</option>
                 <option value="VIEWER">VIEWER</option>
@@ -868,12 +884,12 @@ export function WorkspacesPage() {
               </select>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsInviteOpen(false)}>Cancel</Button>
+          <DialogFooter className="gap-2 sm:gap-0 mt-3">
+            <Button variant="ghost" onClick={() => setIsInviteOpen(false)} className="text-[#64748B] hover:text-white hover:bg-white/[0.05] rounded-[10px] h-10">Cancel</Button>
             <Button
               onClick={() => inviteMutation.mutate({ email: inviteEmail, role: inviteRole })}
               disabled={!inviteEmail.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558DD] hover:to-[#7C3AED] text-white font-semibold rounded-[10px] border-0 h-10 px-5 shadow-lg shadow-indigo-600/15"
             >
               Send Invite
             </Button>
@@ -883,28 +899,29 @@ export function WorkspacesPage() {
 
       {/* 4. Add Direct Member Dialog */}
       <Dialog open={isAddMemberOpen} onOpenChange={setIsAddMemberOpen}>
-        <DialogContent>
+        <DialogContent className="bg-[#111827] border-white/[0.08] text-white rounded-[18px] p-6 shadow-vault-xl">
           <DialogHeader>
-            <DialogTitle>Add Member Directly</DialogTitle>
-            <DialogDescription>Directly add an existing system user to the workspace.</DialogDescription>
+            <DialogTitle className="text-lg font-bold text-white">Add Member Directly</DialogTitle>
+            <DialogDescription className="text-xs text-[#64748B]">Directly add an existing system user to the workspace.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-1">
-              <Label htmlFor="add-member-username">Username</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-member-username" className="label-caps">Username</Label>
               <Input
                 id="add-member-username"
                 placeholder="e.g. john_doe"
                 value={addMemberUsername}
                 onChange={(e) => setAddMemberUsername(e.target.value)}
+                className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
               />
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="add-member-role">Member Role</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-member-role" className="label-caps">Member Role</Label>
               <select
                 id="add-member-role"
                 value={addMemberRole}
                 onChange={(e) => setAddMemberRole(e.target.value as WorkspaceRole)}
-                className="w-full border rounded bg-background px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:outline-none"
+                className="w-full border border-white/[0.08] rounded-[10px] px-3 py-2 text-xs text-[#94A3B8] font-semibold bg-[#0F172A] focus:outline-none mt-0.5"
               >
                 <option value="GUEST">GUEST</option>
                 <option value="VIEWER">VIEWER</option>
@@ -913,12 +930,12 @@ export function WorkspacesPage() {
               </select>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddMemberOpen(false)}>Cancel</Button>
+          <DialogFooter className="gap-2 sm:gap-0 mt-3">
+            <Button variant="ghost" onClick={() => setIsAddMemberOpen(false)} className="text-[#64748B] hover:text-white hover:bg-white/[0.05] rounded-[10px] h-10">Cancel</Button>
             <Button
               onClick={() => addMemberMutation.mutate({ username: addMemberUsername, role: addMemberRole })}
               disabled={!addMemberUsername.trim()}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558DD] hover:to-[#7C3AED] text-white font-semibold rounded-[10px] border-0 h-10 px-5 shadow-lg shadow-indigo-600/15"
             >
               Add Member
             </Button>

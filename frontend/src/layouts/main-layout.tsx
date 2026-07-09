@@ -39,11 +39,11 @@ export function MainLayout() {
 
   return (
     <RealtimeProvider>
-      <div className="flex h-screen overflow-hidden bg-[#070B14] text-foreground">
+      <div className="flex h-screen overflow-hidden bg-[#070B14] text-white">
         {/* Skip navigation link for accessibility */}
         <a 
           href="#main-content" 
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-[#6366F1] focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-[#6366F1]"
         >
           Skip to main content
         </a>
@@ -62,17 +62,21 @@ export function MainLayout() {
             <div 
               role="alert"
               aria-live="assertive"
-              className="flex items-center justify-center gap-2 bg-amber-500 text-amber-950 px-4 py-1.5 text-xs font-semibold shadow-inner border-b border-amber-600 animate-slide-down"
+              className="flex items-center justify-center gap-2 bg-amber-500/10 border-b border-amber-500/20 text-amber-400 px-4 py-2 text-xs font-semibold shadow-inner animate-slide-down"
             >
-              <WifiOff className="h-3.5 w-3.5" />
+              <WifiOff className="h-3.5 w-3.5 animate-bounce" />
               <span>Offline Mode: Using cached storage workspace records. Changes will sync when online.</span>
             </div>
           )}
 
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-hidden relative">
+            {/* Ambient radial blur in the main section background */}
+            <div className="absolute inset-0 bg-dots-dark bg-dots opacity-[0.02] pointer-events-none" />
+            <div className="absolute -top-48 right-1/4 h-[400px] w-[400px] rounded-full bg-[#6366F1]/3 blur-[120px] pointer-events-none" />
+
             <main 
               id="main-content" 
-              className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 focus:outline-none"
+              className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 focus:outline-none relative z-10"
               tabIndex={-1}
             >
               <ErrorBoundary name="MainLayoutOutlet">
@@ -87,4 +91,4 @@ export function MainLayout() {
     </RealtimeProvider>
   );
 }
-
+export default MainLayout;

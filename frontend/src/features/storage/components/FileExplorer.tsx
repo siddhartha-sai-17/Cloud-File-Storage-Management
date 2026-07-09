@@ -1,10 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { RefreshCw, FolderOpen } from 'lucide-react';
+import { RefreshCw, FolderOpen, CloudUpload } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 
@@ -25,7 +23,6 @@ import { CommentsPanel } from '@/features/comments/components/CommentsPanel';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BulkActionToolbar } from './BulkActionToolbar';
 import { useFavorites } from '@/features/favorites/hooks/useFavorites';
-
 
 import { AnimatePresence } from 'framer-motion';
 import { RightInfoPanel } from './RightInfoPanel';
@@ -153,20 +150,19 @@ export function FileExplorer() {
     clearSelection();
   };
 
-
   const selectedItem = items.find((i) => selectedIds.has(i.id)) || null;
 
   return (
     <div
       {...getRootProps()}
-      className={`relative flex flex-col flex-1 h-full min-h-[450px] outline-none rounded-lg p-1 ${
-        isDragActive ? 'bg-primary/5 ring-2 ring-dashed ring-primary' : ''
+      className={`relative flex flex-col flex-1 h-full min-h-[450px] outline-none rounded-[18px] p-2 transition-all ${
+        isDragActive ? 'bg-[#6366F1]/5 ring-2 ring-dashed ring-[#6366F1]/40' : ''
       }`}
     >
       <input {...getInputProps()} />
 
       {/* Breadcrumbs & Refresh bar */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 px-2">
         <Breadcrumb
           items={breadcrumbs.map((b) => ({
             label: b.name,
@@ -190,7 +186,13 @@ export function FileExplorer() {
           }}
         />
 
-        <Button variant="ghost" size="icon" onClick={() => refetch()} title="Refresh page">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => refetch()} 
+          title="Refresh page"
+          className="h-8 w-8 text-[#475569] hover:text-white hover:bg-white/[0.05] rounded-[8px]"
+        >
           <RefreshCw className="h-4 w-4" />
         </Button>
       </div>
@@ -225,9 +227,11 @@ export function FileExplorer() {
       <div className="flex-1 flex gap-6 overflow-hidden min-h-0">
         <div className="flex-1 overflow-y-auto py-2" onClick={() => clearSelection()}>
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-4">
-              <LoadingSpinner size={36} />
-              <p className="text-sm text-muted-foreground animate-pulse">Loading files...</p>
+            <div className="flex h-[40vh] items-center justify-center">
+              <div className="flex flex-col items-center gap-3">
+                <RefreshCw className="h-6 w-6 animate-spin text-[#6366F1]" />
+                <p className="text-sm text-[#475569] font-medium">Loading files…</p>
+              </div>
             </div>
           ) : isError ? (
             <ErrorState
@@ -236,15 +240,22 @@ export function FileExplorer() {
               retryAction={refetch}
             />
           ) : items.length === 0 ? (
-            <EmptyState
-              icon={FolderOpen}
-              title={searchQuery ? 'No search results found' : 'Folder is empty'}
-              description={
-                searchQuery
-                  ? 'Try refactoring your search term or clear the filter.'
-                  : 'Drag and drop files here to upload them instantly.'
-              }
-            />
+            <div className="flex flex-col items-center justify-center py-20 gap-4 border border-dashed border-white/[0.08] rounded-[18px] bg-white/[0.01]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-white/[0.03] border border-white/[0.05]">
+                <FolderOpen className="h-6 w-6 text-[#475569]" />
+              </div>
+              <div className="text-center space-y-1">
+                <p className="text-sm font-semibold text-white">
+                  {searchQuery ? 'No search results found' : 'Folder is empty'}
+                </p>
+                <p className="text-xs text-[#64748B] max-w-xs leading-relaxed">
+                  {searchQuery
+                    ? 'Try refactoring your search term or clear the filter.'
+                    : 'Drag and drop files here to upload them instantly.'
+                  }
+                </p>
+              </div>
+            </div>
           ) : viewMode === 'grid' ? (
             <FileGrid
               items={items}
@@ -351,11 +362,11 @@ export function FileExplorer() {
 
       {/* Drag & Drop Visual overlay */}
       {isDragActive && (
-        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm pointer-events-none rounded-lg">
-          <div className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-primary rounded-xl bg-card shadow-lg max-w-sm text-center">
-            <CloudUploadIcon className="h-10 w-10 text-primary animate-bounce" />
-            <h3 className="text-lg font-semibold">Drop to Upload</h3>
-            <p className="text-sm text-muted-foreground">Release your files to start uploading them automatically.</p>
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-[#070B14]/80 backdrop-blur-sm pointer-events-none rounded-[18px]">
+          <div className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-[#6366F1] rounded-[18px] bg-[#111827] shadow-vault max-w-sm text-center">
+            <CloudUpload className="h-10 w-10 text-[#6366F1] animate-bounce" />
+            <h3 className="text-lg font-bold text-white">Drop to Upload</h3>
+            <p className="text-xs text-[#94A3B8] leading-relaxed">Release your files to start uploading them automatically.</p>
           </div>
         </div>
       )}
@@ -408,7 +419,7 @@ export function FileExplorer() {
       {/* Comments panel dialog */}
       {commentsItem && (
         <Dialog open={commentsItem !== null} onOpenChange={() => setCommentsItem(null)}>
-          <DialogContent className="max-w-lg max-h-[85vh] flex flex-col overflow-hidden">
+          <DialogContent className="max-w-lg max-h-[85vh] flex flex-col overflow-hidden bg-[#111827] border-white/[0.08] text-white rounded-[18px]">
             <DialogHeader>
               <DialogTitle className="text-sm font-bold truncate">Comments: {commentsItem.name}</DialogTitle>
             </DialogHeader>
@@ -430,25 +441,4 @@ export function FileExplorer() {
     </div>
   );
 }
-
-// Inline minor icon helpers
-function CloudUploadIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
-      <path d="M12 12v9" />
-      <path d="m16 16-4-4-4 4" />
-    </svg>
-  );
-}
+export default FileExplorer;

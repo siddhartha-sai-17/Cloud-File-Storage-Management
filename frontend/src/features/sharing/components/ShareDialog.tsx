@@ -18,6 +18,8 @@ import {
   Globe,
   Building2,
   UserX,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   Dialog,
@@ -50,7 +52,7 @@ type Tab = 'links' | 'permissions';
 
 const SHARE_TYPE_OPTIONS: { type: ShareType; label: string; description: string; icon: React.ReactNode }[] = [
   { type: 'PUBLIC', label: 'Public', description: 'Anyone with the link', icon: <Globe className="h-4 w-4" /> },
-  { type: 'INTERNAL', label: 'Internal', description: 'Logged-in users only', icon: <Building2 className="h-4 w-4" /> },
+  { type: 'INTERNAL', label: 'Internal', description: 'Logged-in users', icon: <Building2 className="h-4 w-4" /> },
   { type: 'PRIVATE', label: 'Private', description: 'Specific users only', icon: <Users className="h-4 w-4" /> },
   { type: 'ANONYMOUS', label: 'Anonymous', description: 'Untracked access', icon: <UserX className="h-4 w-4" /> },
 ];
@@ -163,7 +165,7 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
 
   const copyLink = (token: string) => {
     const link = `${window.location.origin}/public/${token}`;
-    navigator.clipboard.writeText(link).then(() => toast.success('Link copied to clipboard!'));
+    navigator.clipboard.writeText(link).then(() => toast.success('Link copied!'));
   };
 
   const loadQr = async (shareId: string) => {
@@ -185,22 +187,22 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
 
   return (
     <Dialog open={open} onOpenChange={() => { onClose(); setQrUrl(null); }}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Link2 className="h-5 w-5 text-indigo-600" />
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col overflow-hidden bg-[#111827] border-white/[0.08] text-white rounded-[18px] p-6 shadow-vault-xl">
+        <DialogHeader className="space-y-1">
+          <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-white">
+            <Link2 className="h-5 w-5 text-[#6366F1]" />
             Share: {fileName}
           </DialogTitle>
-          <DialogDescription>Create share links or assign direct file permissions.</DialogDescription>
+          <DialogDescription className="text-xs text-[#64748B]">Create share links or assign direct file permissions.</DialogDescription>
         </DialogHeader>
 
         {/* Tabs */}
-        <div className="flex gap-4 border-b">
+        <div className="flex gap-4 border-b border-white/[0.05] mt-2 shrink-0">
           <button
             onClick={() => setTab('links')}
             className={cn(
-              'pb-2 text-sm font-semibold border-b-2 transition-all',
-              tab === 'links' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-muted-foreground hover:text-foreground'
+              'pb-2.5 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-all',
+              tab === 'links' ? 'border-[#6366F1] text-white' : 'border-transparent text-[#475569] hover:text-[#94A3B8]'
             )}
           >
             Share Links
@@ -208,21 +210,21 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
           <button
             onClick={() => setTab('permissions')}
             className={cn(
-              'pb-2 text-sm font-semibold border-b-2 transition-all',
-              tab === 'permissions' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-muted-foreground hover:text-foreground'
+              'pb-2.5 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-all',
+              tab === 'permissions' ? 'border-[#6366F1] text-white' : 'border-transparent text-[#475569] hover:text-[#94A3B8]'
             )}
           >
             Direct Permissions
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1 space-y-6 pt-2">
+        <div className="overflow-y-auto flex-1 space-y-6 pt-4 pr-1">
           {/* --- Share Links Tab --- */}
           {tab === 'links' && (
             <div className="space-y-6">
               {/* Create Share Form */}
-              <div className="border rounded-xl p-4 space-y-4 bg-muted/20">
-                <h3 className="text-sm font-bold">Create New Share Link</h3>
+              <div className="border border-white/[0.06] rounded-[16px] p-5 space-y-5 bg-white/[0.01]">
+                <h3 className="text-sm font-bold text-white">Create New Share Link</h3>
 
                 {/* Share Type */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -231,28 +233,33 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                       key={opt.type}
                       onClick={() => setShareType(opt.type)}
                       className={cn(
-                        'flex flex-col items-center gap-1 p-3 rounded-lg border text-xs font-medium transition-all',
+                        'flex flex-col items-center gap-1.5 p-3 rounded-[12px] border text-xs font-semibold transition-all duration-150',
                         shareType === opt.type
-                          ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700'
-                          : 'border-muted bg-background text-muted-foreground hover:border-foreground/20'
+                          ? 'border-[#6366F1] bg-[#6366F1]/10 text-white shadow-vault-sm'
+                          : 'border-white/[0.05] bg-[#0F172A] text-[#64748B] hover:border-white/[0.12] hover:text-[#94A3B8]'
                       )}
                     >
-                      {opt.icon}
-                      <span>{opt.label}</span>
-                      <span className="text-[10px] font-normal text-center opacity-70">{opt.description}</span>
+                      <div className={cn(
+                        'flex h-7 w-7 items-center justify-center rounded-[8px] border shrink-0',
+                        shareType === opt.type ? 'bg-[#6366F1]/15 border-[#6366F1]/20 text-[#818CF8]' : 'bg-white/[0.02] border-white/[0.05] text-[#475569]'
+                      )}>
+                        {opt.icon}
+                      </div>
+                      <span className="text-[11px] font-bold">{opt.label}</span>
+                      <span className="text-[9px] font-medium text-center text-[#475569]">{opt.description}</span>
                     </button>
                   ))}
                 </div>
 
                 {/* Permission + toggles */}
-                <div className="flex flex-wrap gap-4 items-center">
-                  <div className="space-y-1">
-                    <Label htmlFor="share-permission">Permission</Label>
+                <div className="flex flex-wrap gap-6 items-center">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="share-permission" className="label-caps">Permission</Label>
                     <select
                       id="share-permission"
                       value={permission}
                       onChange={(e) => setPermission(e.target.value as SharePermission)}
-                      className="border rounded px-2 py-1.5 text-sm bg-background focus:ring-1 focus:ring-primary focus:outline-none"
+                      className="border border-white/[0.08] rounded-[10px] px-3 py-1.5 text-xs text-[#94A3B8] font-semibold bg-[#0F172A] focus:ring-1 focus:ring-[#6366F1]/40 focus:outline-none"
                     >
                       <option value="VIEW">VIEW</option>
                       <option value="DOWNLOAD">DOWNLOAD</option>
@@ -262,32 +269,35 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
 
                   <button
                     onClick={() => setAllowPreview((p) => !p)}
-                    className="flex items-center gap-1.5 text-sm text-foreground"
+                    className="flex items-center gap-2 text-[12px] font-semibold text-[#94A3B8] hover:text-white mt-5 transition-colors"
                     aria-pressed={allowPreview}
                   >
-                    {allowPreview ? <ToggleRight className="h-5 w-5 text-indigo-600" /> : <ToggleLeft className="h-5 w-5 text-muted-foreground" />}
-                    <Eye className="h-3.5 w-3.5" /> Preview
+                    {allowPreview ? <ToggleRight className="h-5 w-5 text-[#6366F1]" /> : <ToggleLeft className="h-5 w-5 text-[#475569]" />}
+                    <Eye className="h-3.5 w-3.5 text-[#475569]" />
+                    <span>Preview</span>
                   </button>
 
                   <button
                     onClick={() => setAllowDownload((p) => !p)}
-                    className="flex items-center gap-1.5 text-sm text-foreground"
+                    className="flex items-center gap-2 text-[12px] font-semibold text-[#94A3B8] hover:text-white mt-5 transition-colors"
                     aria-pressed={allowDownload}
                   >
-                    {allowDownload ? <ToggleRight className="h-5 w-5 text-indigo-600" /> : <ToggleLeft className="h-5 w-5 text-muted-foreground" />}
-                    <Download className="h-3.5 w-3.5" /> Download
+                    {allowDownload ? <ToggleRight className="h-5 w-5 text-[#6366F1]" /> : <ToggleLeft className="h-5 w-5 text-[#475569]" />}
+                    <Download className="h-3.5 w-3.5 text-[#475569]" />
+                    <span>Download</span>
                   </button>
                 </div>
 
                 {/* Private target usernames */}
                 {shareType === 'PRIVATE' && (
-                  <div className="space-y-1">
-                    <Label htmlFor="share-target-users">Target Usernames (comma separated)</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="share-target-users" className="label-caps">Target Usernames (comma separated)</Label>
                     <Input
                       id="share-target-users"
                       value={targetUsernames}
                       onChange={(e) => setTargetUsernames(e.target.value)}
                       placeholder="alice, bob, charlie"
+                      className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
                     />
                   </div>
                 )}
@@ -295,16 +305,17 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                 {/* Advanced toggle */}
                 <button
                   onClick={() => setShowAdvanced((p) => !p)}
-                  className="text-xs text-indigo-600 hover:underline focus:outline-none"
+                  className="flex items-center gap-1 text-[11px] font-bold text-[#818CF8] hover:text-[#a5b4fc] transition-colors focus:outline-none"
                 >
-                  {showAdvanced ? '▾ Hide' : '▸ Show'} advanced options
+                  {showAdvanced ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  <span>{showAdvanced ? 'Hide' : 'Show'} advanced options</span>
                 </button>
 
                 {showAdvanced && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-                    <div className="space-y-1">
-                      <Label htmlFor="share-password" className="flex items-center gap-1.5">
-                        <Lock className="h-3 w-3" /> Password
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="share-password" className="label-caps flex items-center gap-1.5">
+                        <Lock className="h-3 w-3 text-[#475569]" /> Password
                       </Label>
                       <Input
                         id="share-password"
@@ -312,11 +323,12 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Optional"
+                        className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
                       />
                     </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="share-dl-limit" className="flex items-center gap-1.5">
-                        <Shield className="h-3 w-3" /> Download limit
+                    <div className="space-y-1.5">
+                      <Label htmlFor="share-dl-limit" className="label-caps flex items-center gap-1.5">
+                        <Shield className="h-3 w-3 text-[#475569]" /> Download limit
                       </Label>
                       <Input
                         id="share-dl-limit"
@@ -324,17 +336,19 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                         value={downloadLimit}
                         onChange={(e) => setDownloadLimit(e.target.value)}
                         placeholder="Unlimited"
+                        className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
                       />
                     </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="share-expires" className="flex items-center gap-1.5">
-                        <Calendar className="h-3 w-3" /> Expires at
+                    <div className="space-y-1.5">
+                      <Label htmlFor="share-expires" className="label-caps flex items-center gap-1.5">
+                        <Calendar className="h-3 w-3 text-[#475569]" /> Expires at
                       </Label>
                       <Input
                         id="share-expires"
                         type="datetime-local"
                         value={expiresAt}
                         onChange={(e) => setExpiresAt(e.target.value)}
+                        className="bg-[#0F172A] border-white/10 text-white rounded-[10px] h-10 text-[13px]"
                       />
                     </div>
                   </div>
@@ -343,59 +357,59 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                 <Button
                   onClick={handleCreateShare}
                   disabled={createShareMutation.isPending}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                  className="w-full h-10 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558DD] hover:to-[#7C3AED] text-white font-semibold rounded-[10px] border-0 gap-2 shadow-lg shadow-indigo-600/15"
                 >
                   {createShareMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Link2 className="h-4 w-4 mr-2" />
+                    <Link2 className="h-4 w-4" />
                   )}
-                  Generate Share Link
+                  <span>Generate Share Link</span>
                 </Button>
               </div>
 
               {/* Existing Share Links */}
               {isLoadingShares ? (
                 <div className="flex justify-center py-6">
-                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <Loader2 className="h-5 w-5 animate-spin text-[#6366F1]" />
                 </div>
               ) : shares.length > 0 ? (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-bold">Active Share Links ({shares.length})</h3>
+                <div className="space-y-3.5">
+                  <h3 className="text-[10px] font-bold text-[#475569] uppercase tracking-[0.12em]">Active Share Links ({shares.length})</h3>
                   {shares.map((share) => {
                     const shareUrl = `${window.location.origin}/public/${share.token}`;
                     return (
                       <div
                         key={share.id}
-                        className="border rounded-lg p-3 space-y-2 bg-card"
+                        className="border border-white/[0.06] rounded-[16px] p-4 space-y-3 bg-white/[0.01]"
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 text-xs min-w-0">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5 text-xs min-w-0">
                             <span className={cn(
-                              'px-2 py-0.5 rounded-full font-bold uppercase text-[10px] text-white',
-                              share.shareType === 'PUBLIC' ? 'bg-emerald-600' :
-                              share.shareType === 'PRIVATE' ? 'bg-indigo-600' :
-                              share.shareType === 'INTERNAL' ? 'bg-blue-600' : 'bg-gray-500'
+                              'px-2 py-0.5 rounded-[5px] font-bold uppercase text-[9px] text-white border',
+                              share.shareType === 'PUBLIC' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                              share.shareType === 'PRIVATE' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' :
+                              share.shareType === 'INTERNAL' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/[0.04] text-[#94A3B8]'
                             )}>
                               {share.shareType}
                             </span>
-                            <span className="font-semibold text-muted-foreground">{share.permission}</span>
+                            <span className="font-bold text-[#475569] uppercase">{share.permission}</span>
                             {!share.active && (
-                              <span className="text-red-600 font-semibold text-[10px]">REVOKED</span>
+                              <span className="text-rose-400 font-bold text-[9px] uppercase tracking-wide border border-rose-500/20 bg-rose-500/10 px-1.5 py-0.5 rounded-[5px]">REVOKED</span>
                             )}
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
                               onClick={() => copyLink(share.token)}
                               aria-label="Copy link"
-                              className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                              className="h-7 w-7 flex items-center justify-center rounded-[6px] hover:bg-white/[0.05] text-[#475569] hover:text-white transition-colors"
                             >
                               <Copy className="h-3.5 w-3.5" />
                             </button>
                             <button
                               onClick={() => loadQr(share.id)}
                               aria-label="Show QR code"
-                              className="h-7 w-7 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                              className="h-7 w-7 flex items-center justify-center rounded-[6px] hover:bg-white/[0.05] text-[#475569] hover:text-white transition-colors"
                             >
                               <QrCode className="h-3.5 w-3.5" />
                             </button>
@@ -403,7 +417,7 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                               <button
                                 onClick={() => revokeShareMutation.mutate(share.id)}
                                 aria-label="Revoke share"
-                                className="h-7 w-7 flex items-center justify-center rounded hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors text-amber-600"
+                                className="h-7 w-7 flex items-center justify-center rounded-[6px] hover:bg-amber-500/10 text-amber-400 transition-colors"
                               >
                                 <Shield className="h-3.5 w-3.5" />
                               </button>
@@ -411,27 +425,27 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                             <button
                               onClick={() => deleteShareMutation.mutate(share.id)}
                               aria-label="Delete share"
-                              className="h-7 w-7 flex items-center justify-center rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors text-destructive"
+                              className="h-7 w-7 flex items-center justify-center rounded-[6px] hover:bg-rose-500/10 text-rose-400 transition-colors"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           </div>
                         </div>
 
-                        <div className="truncate text-xs text-muted-foreground bg-muted rounded px-2 py-1 font-mono">
+                        <div className="truncate text-[12px] text-[#94A3B8] bg-[#0F172A] border border-white/[0.06] rounded-[10px] px-3.5 py-2 font-mono">
                           {shareUrl}
                         </div>
 
-                        <div className="flex flex-wrap gap-3 text-[10px] text-muted-foreground">
-                          {share.passwordRequired && <span className="flex items-center gap-1"><Lock className="h-3 w-3" /> Password protected</span>}
+                        <div className="flex flex-wrap gap-4 text-[11px] text-[#475569] font-medium pt-1">
+                          {share.passwordRequired && <span className="flex items-center gap-1.5 text-amber-400"><Lock className="h-3.5 w-3.5" /> Password protected</span>}
                           {share.downloadLimit !== null && (
-                            <span className="flex items-center gap-1">
-                              <Shield className="h-3 w-3" /> {share.downloadCount}/{share.downloadLimit} downloads
+                            <span className="flex items-center gap-1.5">
+                              <Shield className="h-3.5 w-3.5" /> {share.downloadCount}/{share.downloadLimit} downloads
                             </span>
                           )}
                           {share.expiresAt && (
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" /> Expires {new Date(share.expiresAt).toLocaleDateString()}
+                            <span className="flex items-center gap-1.5">
+                              <Calendar className="h-3.5 w-3.5" /> Expires {new Date(share.expiresAt).toLocaleDateString()}
                             </span>
                           )}
                           <span>{share.viewCount} views · {share.downloadCount} downloads</span>
@@ -439,8 +453,8 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
 
                         {/* QR Code image */}
                         {qrUrl && (
-                          <div className="flex items-center justify-center pt-2">
-                            <img src={qrUrl} alt="QR Code" className="h-32 w-32 rounded border" />
+                          <div className="flex items-center justify-center pt-3 border-t border-white/[0.04] mt-2">
+                            <img src={qrUrl} alt="QR Code" className="h-32 w-32 rounded-lg border border-white/[0.08] bg-white p-2 shadow-vault" />
                           </div>
                         )}
                       </div>
@@ -455,25 +469,26 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
           {tab === 'permissions' && (
             <div className="space-y-6">
               {/* Grant form */}
-              <div className="border rounded-xl p-4 space-y-4 bg-muted/20">
-                <h3 className="text-sm font-bold">Grant Direct File Permission</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <Label htmlFor="perm-username">Username</Label>
+              <div className="border border-white/[0.06] rounded-[16px] p-5 space-y-5 bg-white/[0.01]">
+                <h3 className="text-sm font-bold text-white">Grant Direct File Permission</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="perm-username" className="label-caps">Username</Label>
                     <Input
                       id="perm-username"
                       value={permUsername}
                       onChange={(e) => setPermUsername(e.target.value)}
                       placeholder="e.g. alice"
+                      className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="perm-type">Permission Type</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="perm-type" className="label-caps">Permission Type</Label>
                     <select
                       id="perm-type"
                       value={permType}
                       onChange={(e) => setPermType(e.target.value)}
-                      className="w-full border rounded px-2 py-1.5 text-sm bg-background focus:ring-1 focus:ring-primary focus:outline-none"
+                      className="w-full border border-white/[0.08] rounded-[10px] px-3 py-1.5 text-xs text-[#94A3B8] font-semibold bg-[#0F172A] focus:ring-1 focus:ring-[#6366F1]/40 focus:outline-none mt-0.5"
                     >
                       <option value="FILE_READ">FILE_READ</option>
                       <option value="FILE_WRITE">FILE_WRITE</option>
@@ -481,14 +496,15 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                       <option value="FILE_SHARE">FILE_SHARE</option>
                     </select>
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="perm-duration">Duration (minutes)</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="perm-duration" className="label-caps">Duration (minutes)</Label>
                     <Input
                       id="perm-duration"
                       type="number"
                       value={permDuration}
                       onChange={(e) => setPermDuration(e.target.value)}
                       placeholder="Permanent"
+                      className="bg-[#0F172A] border-white/10 text-white placeholder:text-[#334155] rounded-[10px] h-10 text-[13px]"
                     />
                   </div>
                 </div>
@@ -501,46 +517,46 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                     })
                   }
                   disabled={!permUsername.trim() || grantPermMutation.isPending}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  className="h-10 px-5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] hover:from-[#5558DD] hover:to-[#7C3AED] text-white font-semibold rounded-[10px] border-0 gap-2 shadow-lg shadow-indigo-600/15"
                 >
-                  {grantPermMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Grant Permission
+                  {grantPermMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  <span>Grant Permission</span>
                 </Button>
               </div>
 
               {/* Existing permissions */}
               {isLoadingPerms ? (
                 <div className="flex justify-center py-6">
-                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <Loader2 className="h-5 w-5 animate-spin text-[#6366F1]" />
                 </div>
               ) : filePermissions.length > 0 ? (
-                <div className="border rounded-lg overflow-hidden bg-card">
-                  <table className="w-full text-left text-sm">
+                <div className="border border-white/[0.06] rounded-[16px] overflow-hidden bg-[#111827]">
+                  <table className="w-full text-left text-[13px] border-collapse">
                     <thead>
-                      <tr className="bg-muted/50 border-b text-xs font-semibold text-muted-foreground uppercase">
-                        <th className="px-4 py-2">User</th>
-                        <th className="px-4 py-2">Permission</th>
-                        <th className="px-4 py-2">Granted by</th>
-                        <th className="px-4 py-2">Expires</th>
-                        <th className="px-4 py-2 text-right">Actions</th>
+                      <tr className="bg-[#0F172A] border-b border-white/[0.05] label-caps">
+                        <th className="px-4 py-3.5 font-bold tracking-[0.1em] text-[#475569]">User</th>
+                        <th className="px-4 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Permission</th>
+                        <th className="px-4 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Granted by</th>
+                        <th className="px-4 py-3.5 font-bold tracking-[0.1em] text-[#475569]">Expires</th>
+                        <th className="px-4 py-3.5 text-right font-bold tracking-[0.1em] text-[#475569]">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody className="divide-y divide-white/[0.04]">
                       {filePermissions.map((p) => (
-                        <tr key={p.id} className="hover:bg-muted/20 transition-all">
-                          <td className="px-4 py-2 font-semibold">{p.username}</td>
-                          <td className="px-4 py-2 text-muted-foreground">{p.permission}</td>
-                          <td className="px-4 py-2 text-muted-foreground">{p.grantedByUsername}</td>
-                          <td className="px-4 py-2 text-muted-foreground text-xs">
+                        <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
+                          <td className="px-4 py-3.5 font-bold text-white">{p.username}</td>
+                          <td className="px-4 py-3.5 text-[#94A3B8] font-semibold">{p.permission}</td>
+                          <td className="px-4 py-3.5 text-[#64748B] font-medium">{p.grantedByUsername}</td>
+                          <td className="px-4 py-3.5 text-[#64748B] font-medium">
                             {p.expiresAt ? new Date(p.expiresAt).toLocaleDateString() : 'Permanent'}
                           </td>
-                          <td className="px-4 py-2 text-right">
+                          <td className="px-4 py-3.5 text-right">
                             <button
                               onClick={() => revokePermMutation.mutate(p.id)}
                               aria-label="Revoke permission"
-                              className="h-7 w-7 inline-flex items-center justify-center rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors text-destructive"
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-[6px] hover:bg-rose-500/10 text-rose-400 transition-colors"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </td>
                         </tr>
@@ -549,9 +565,9 @@ export function ShareDialog({ fileId, fileName, open, onClose }: ShareDialogProp
                   </table>
                 </div>
               ) : (
-                <p className="text-center text-sm text-muted-foreground py-8">
+                <div className="text-center py-8 text-xs text-[#475569] font-medium border border-dashed border-white/[0.08] rounded-[16px]">
                   No direct permissions granted for this file.
-                </p>
+                </div>
               )}
             </div>
           )}

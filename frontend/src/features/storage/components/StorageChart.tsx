@@ -1,10 +1,30 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StorageChartProps {
   used: number;
   available: number;
 }
+
+const formatSize = (bytes: number) => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+};
+
+const CustomTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.length) return null;
+  const item = payload[0].payload;
+  return (
+    <div className="rounded-[12px] border border-white/[0.08] bg-[#161F2F] px-3 py-2 shadow-vault-xl">
+      <p className="text-[10px] font-semibold text-[#64748B] mb-1">{item.name}</p>
+      <p className="text-[13px] font-bold text-white">
+        {formatSize(item.value)}
+      </p>
+    </div>
+  );
+};
 
 export function StorageChart({ used, available }: StorageChartProps) {
   const data = [
@@ -15,26 +35,23 @@ export function StorageChart({ used, available }: StorageChartProps) {
   const total = used + available;
   const usedPercent = total > 0 ? Math.round((used / total) * 100) : 0;
 
-  const COLORS = ['#6366f1', '#111827'];
-
-  const formatSize = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-  };
+  // Exact design colors: accent [#6366F1] and secondary surface [#1F2937]
+  const COLORS = ['#6366F1', 'rgba(255, 255, 255, 0.04)'];
 
   return (
-    <Card className="col-span-1 bg-[#151b2f] border-[#1e293b]/40 shadow-lg glow-border overflow-hidden rounded-xl">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xs font-semibold text-gray-400 tracking-wider uppercase">Storage Distribution</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center h-64 relative">
+    <div className="vault-card col-span-1 p-5 flex flex-col justify-between">
+      <div>
+        <p className="label-caps">Workspace</p>
+        <h3 className="text-base font-bold text-white mt-1">Storage Distribution</h3>
+      </div>
+
+      <div className="h-64 flex flex-col items-center justify-center relative mt-4">
+        {/* Center label */}
         <div className="absolute top-[37%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
           <span className="text-3xl font-extrabold text-white tracking-tight">{usedPercent}%</span>
-          <span className="block text-[10px] text-gray-500 font-bold uppercase mt-0.5">Used</span>
+          <span className="block text-[10px] text-[#475569] font-bold uppercase mt-0.5">Used</span>
         </div>
+
         <ResponsiveContainer width="100%" height="90%">
           <PieChart>
             <Pie
@@ -47,24 +64,21 @@ export function StorageChart({ used, available }: StorageChartProps) {
               dataKey="value"
             >
               {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#151b2f" strokeWidth={2} />
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#111827" strokeWidth={2} />
               ))}
             </Pie>
-            <Tooltip 
-              contentStyle={{ background: '#111827', borderColor: '#1e293b', borderRadius: '8px' }}
-              itemStyle={{ color: '#fff' }}
-              formatter={(value: any) => formatSize(Number(value || 0))} 
-            />
+            <Tooltip content={<CustomTooltip />} />
             <Legend 
               verticalAlign="bottom" 
               height={36} 
               iconType="circle"
               iconSize={8}
-              formatter={(value) => <span className="text-xs text-gray-400 font-medium">{value}</span>}
+              formatter={(value) => <span className="text-[12px] text-[#64748B] font-medium ml-1.5">{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
+export default StorageChart;

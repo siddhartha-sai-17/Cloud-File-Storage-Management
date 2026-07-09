@@ -1,6 +1,5 @@
 import { MoreVertical, Folder } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { type StorageItem } from '../types';
 import { getFileIcon } from '../utils/icons';
 import { FavoriteToggle } from '@/features/favorites/components/FavoriteToggle';
@@ -17,6 +16,52 @@ interface FileGridProps {
   onToggleStar: (id: number) => void;
 }
 
+const formatSize = (bytes: number | null) => {
+  if (bytes === null) return '—';
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+};
+
+const getFileIconColor = (name: string) => {
+  const ext = name.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'txt':
+    case 'md':
+      return 'file-other';
+    case 'pdf':
+      return 'file-pdf';
+    case 'doc':
+    case 'docx':
+      return 'file-doc';
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'gif':
+    case 'svg':
+    case 'webp':
+      return 'file-image';
+    case 'mp4':
+    case 'mkv':
+    case 'mov':
+      return 'file-video';
+    case 'xls':
+    case 'xlsx':
+    case 'csv':
+      return 'file-sheet';
+    case 'zip':
+    case 'tar':
+    case 'gz':
+    case 'rar':
+    case '7z':
+      return 'file-zip';
+    default:
+      return 'file-other';
+  }
+};
+
 export function FileGrid({
   items,
   selectedIds,
@@ -26,50 +71,6 @@ export function FileGrid({
 }: FileGridProps) {
   const folders = items.filter((i) => i.type === 'FOLDER');
   const files = items.filter((i) => i.type === 'FILE');
-
-  const formatSize = (bytes: number | null) => {
-    if (bytes === null) return '-';
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-  };
-
-  const getFileIconColor = (name: string) => {
-    const ext = name.split('.').pop()?.toLowerCase();
-    switch (ext) {
-      case 'txt':
-      case 'md':
-      case 'pdf':
-      case 'doc':
-      case 'docx':
-        return 'text-blue-400 bg-blue-500/10 border-blue-500/20';
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-      case 'svg':
-      case 'webp':
-        return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
-      case 'mp4':
-      case 'mkv':
-      case 'mov':
-        return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
-      case 'xls':
-      case 'xlsx':
-      case 'csv':
-        return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
-      case 'zip':
-      case 'tar':
-      case 'gz':
-      case 'rar':
-      case '7z':
-        return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
-      default:
-        return 'text-gray-400 bg-gray-500/10 border-gray-500/20';
-    }
-  };
 
   // Chunk files into rows of 4 for virtualized rows layout
   const CHUNK_SIZE = 4;
@@ -86,13 +87,13 @@ export function FileGrid({
 
   return (
     <div 
-      className="space-y-6 max-h-[600px] overflow-y-auto p-2 border border-[#1e293b]/40 rounded-xl bg-[#0b0f19]/40 backdrop-blur-sm shadow-inner" 
+      className="space-y-6 max-h-[600px] overflow-y-auto p-4 border border-white/[0.05] rounded-[18px] bg-[#0A0E1A]/40 backdrop-blur-md shadow-inner" 
       ref={containerRef}
     >
       {/* Folders Section */}
       {folders.length > 0 && (
-        <div className="p-1">
-          <h3 className="mb-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-bold text-[#475569] uppercase tracking-[0.12em]">
             Folders ({folders.length})
           </h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -103,9 +104,9 @@ export function FileGrid({
                   key={folder.id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2, delay: index * 0.02 }}
+                  transition={{ duration: 0.2, delay: index * 0.01 }}
                 >
-                  <Card
+                  <div
                     onClick={(e) => {
                       e.stopPropagation();
                       onItemClick(folder);
@@ -113,32 +114,30 @@ export function FileGrid({
                     onDoubleClick={() => onItemDoubleClick(folder)}
                     onContextMenu={(e) => onContextMenu(e, folder)}
                     className={cn(
-                      "cursor-pointer border select-none transition-all duration-200 glow-border rounded-xl shadow-md",
+                      "group flex items-center justify-between p-3 cursor-pointer border select-none transition-all duration-150 rounded-[14px]",
                       isSelected 
-                        ? "border-indigo-500 bg-indigo-500/10 text-white" 
-                        : "bg-[#151b2f] border-[#1e293b]/40 text-gray-300 hover:text-white"
+                        ? "border-[#6366F1] bg-[#6366F1]/10 text-white shadow-vault-sm" 
+                        : "bg-[#111827] border-white/[0.06] text-[#94A3B8] hover:text-white hover:border-[#6366F1]/20 hover:bg-[#161F2F]"
                     )}
                   >
-                    <CardContent className="flex items-center justify-between p-3.5">
-                      <div className="flex items-center gap-2.5 overflow-hidden">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/15 border border-indigo-500/25 shrink-0">
-                          <Folder className="h-4.5 w-4.5 text-indigo-400 shrink-0" />
-                        </div>
-                        <span className="truncate text-xs font-semibold leading-none">{folder.name}</span>
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[#6366F1]/12 border border-[#6366F1]/20 shrink-0">
+                        <Folder className="h-4.5 w-4.5 text-[#818CF8]" />
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/5 shrink-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onContextMenu(e, folder);
-                        }}
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </CardContent>
-                  </Card>
+                      <span className="truncate text-[12px] font-semibold">{folder.name}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-[#475569] hover:text-white hover:bg-white/[0.05] rounded-[6px] shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onContextMenu(e, folder);
+                      }}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </motion.div>
               );
             })}
@@ -148,8 +147,8 @@ export function FileGrid({
 
       {/* Files Section */}
       {files.length > 0 && (
-        <div className="p-1">
-          <h3 className="mb-3 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-bold text-[#475569] uppercase tracking-[0.12em]">
             Files ({files.length})
           </h3>
           <div 
@@ -170,16 +169,16 @@ export function FileGrid({
                 {rowFiles.map((file, fileIdx) => {
                   const isSelected = selectedIds.has(file.id);
                   const FileIcon = getFileIcon(file.name, 'FILE');
-                  const iconStyles = getFileIconColor(file.name);
+                  const badgeClass = getFileIconColor(file.name);
                   
                   return (
                     <motion.div
                       key={file.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2, delay: fileIdx * 0.03 }}
+                      transition={{ duration: 0.25, delay: fileIdx * 0.02 }}
                     >
-                      <Card
+                      <div
                         onClick={(e) => {
                           e.stopPropagation();
                           onItemClick(file);
@@ -187,29 +186,34 @@ export function FileGrid({
                         onDoubleClick={() => onItemDoubleClick(file)}
                         onContextMenu={(e) => onContextMenu(e, file)}
                         className={cn(
-                          "cursor-pointer overflow-hidden border select-none transition-all duration-200 glow-border h-[162px] rounded-xl shadow-md",
+                          "group cursor-pointer overflow-hidden border select-none transition-all duration-150 h-[162px] rounded-[16px] flex flex-col justify-between",
                           isSelected 
-                            ? "border-indigo-500 bg-indigo-500/10 text-white" 
-                            : "bg-[#151b2f] border-[#1e293b]/40 text-gray-300 hover:text-white"
+                            ? "border-[#6366F1] bg-[#6366F1]/10 text-white shadow-vault-sm" 
+                            : "bg-[#111827] border-white/[0.06] text-[#94A3B8] hover:text-white hover:border-[#6366F1]/20 hover:bg-[#161F2F]"
                         )}
                       >
-                        <div className="flex h-20 items-center justify-center bg-[#0b0f19]/60 p-2 relative group-hover:bg-[#0b0f19]/40 border-b border-[#1e293b]/20">
-                          <div className={cn("flex h-12 w-12 items-center justify-center rounded-xl border shadow-inner", iconStyles)}>
-                            <FileIcon className="h-6 w-6" />
+                        {/* Upper Preview Area */}
+                        <div className="flex h-20 items-center justify-center bg-white/[0.02] border-b border-white/[0.04] p-3 relative">
+                          <div className={cn("flex h-11 w-11 items-center justify-center rounded-[10px] border shadow-inner transition-transform group-hover:scale-105 duration-200", badgeClass)}>
+                            <FileIcon className="h-5.5 w-5.5" />
                           </div>
                         </div>
-                        <CardContent className="p-3">
-                          <div className="flex items-start justify-between gap-1">
-                            <div className="overflow-hidden min-w-0 flex-1">
-                              <p className="truncate text-xs font-bold leading-tight mb-1">{file.name}</p>
-                              <p className="text-[10px] text-gray-500 font-semibold">{formatSize(file.size)}</p>
-                            </div>
-                            <div className="flex items-center shrink-0 gap-0.5">
+
+                        {/* Card metadata content */}
+                        <div className="p-3 space-y-1">
+                          <p className="truncate text-[12px] font-bold text-white leading-tight">
+                            {file.name}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-[#475569] font-semibold">
+                              {formatSize(file.size)}
+                            </span>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <FavoriteToggle fileId={file.id} initialStarred={file.starred} />
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6.5 w-6.5 text-gray-400 hover:text-white p-0 hover:bg-white/5 rounded-md"
+                                className="h-6 w-6 text-[#475569] hover:text-white hover:bg-white/[0.06] rounded-[6px]"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   onContextMenu(e, file);
@@ -219,8 +223,8 @@ export function FileGrid({
                               </Button>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     </motion.div>
                   );
                 })}
@@ -232,4 +236,5 @@ export function FileGrid({
     </div>
   );
 }
+
 export default FileGrid;
