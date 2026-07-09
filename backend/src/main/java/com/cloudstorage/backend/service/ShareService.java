@@ -1,104 +1,39 @@
 package com.cloudstorage.backend.service;
 
-import com.cloudstorage.backend.dto.ShareDto;
+import com.cloudstorage.backend.dto.*;
 import com.cloudstorage.backend.entity.FileMetadata;
-import com.cloudstorage.backend.entity.SharedFile;
-import com.cloudstorage.backend.repository.FileRepository;
-import com.cloudstorage.backend.repository.SharedFileRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class ShareService {
+public interface ShareService {
 
-    private final SharedFileRepository sharedFileRepository;
-    private final FileRepository fileRepository;
-    private final StorageService storageService;
+    // --- Legacy / Backward Compatibility API (using SharedFile) ---
+    ShareDto createShareLink(String username, Long fileId, String password, Integer expiryDays, Integer downloadLimit);
+    List<ShareDto> listMyShares(String username);
+    void disableShare(String username, Long shareId);
+    InputStream getSharedFileStream(String token, String password);
+    boolean isPasswordRequired(String token);
+    FileMetadata getSharedFileMetadata(String token, String password);
 
-    @Transactional
-    public ShareDto createShareLink(String username, Long fileId) {
-        FileMetadata file = fileRepository.findById(fileId)
-                .orElseThrow(() -> new RuntimeException("File not found"));
+    // --- Enterprise Sharing API (using ShareLink) ---
+    ShareLinkDto createShare(String username, CreateShareRequest request);
+    ShareLinkDto updateShare(String username, UUID shareId, UpdateShareRequest request);
+    void deleteShare(String username, UUID shareId);
+    ShareLinkDto getShare(String username, UUID shareId);
+    Page<ShareLinkDto> getMyShares(String username, Pageable pageable);
+    void revokeShare(String username, UUID shareId);
+    void verifySharePassword(UUID shareId, String password);
+    SharePreviewDto getSharePreview(String token);
+    byte[] generateQrCode(UUID shareId, String format, int width, int height);
+    String generateSignedUrl(UUID shareId, long ttlSeconds);
+    boolean validateSignedUrl(String token, String expiresAt, String signature);
 
-        if (!file.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("Unauthorized");
-        }
-
-        String token = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
-        SharedFile sharedFile = new SharedFile();
-        sharedFile.setFile(file);
-        sharedFile.setToken(token);
-
-        sharedFile = sharedFileRepository.save(sharedFile);
-
-        return mapToDto(sharedFile);
-    }
-
-    public List<ShareDto> listMyShares(String username) {
-        return sharedFileRepository.findByFile_User_Username(username).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void disableShare(String username, Long shareId) {
-        SharedFile sharedFile = sharedFileRepository.findById(shareId)
-                .orElseThrow(() -> new RuntimeException("Share link not found"));
-
-        if (!sharedFile.getFile().getUser().getUsername().equals(username)) {
-            throw new RuntimeException("Unauthorized");
-        }
-
-        sharedFile.setActive(false);
-        sharedFileRepository.save(sharedFile);
-    }
-
-    public InputStream getSharedFileStream(String token) {
-        SharedFile sharedFile = sharedFileRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Link invalid"));
-
-        if (!sharedFile.isActive()) {
-            throw new RuntimeException("Link expired or disabled");
-        }
-
-        // Re-use storage service to get stream, but bypass user check effectively since
-        // we validated token
-        // We need a method in StorageService that takes fileId directly or just copy
-        // logic.
-        // Copying logic is safer to avoid creating "admin-like" methods in
-        // StorageService if strict there.
-        // Actually best to add a method in StorageService: downloadFileInternal(Long
-        // fileId)
-        return storageService.downloadFileInternal(sharedFile.getFile().getId());
-    }
-
-    public FileMetadata getSharedFileMetadata(String token) {
-        SharedFile sharedFile = sharedFileRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Link invalid"));
-        if (!sharedFile.isActive()) {
-            throw new RuntimeException("Link expired or disabled");
-        }
-        return sharedFile.getFile();
-    }
-
-    private ShareDto mapToDto(SharedFile sharedFile) {
-        // Assuming frontend URL logic will handle full link construction or we return
-        // full URL here if we know host
-        // We will return relative path or token
-        return ShareDto.builder()
-                .id(sharedFile.getId())
-                .fileId(sharedFile.getFile().getId())
-                .fileName(sharedFile.getFile().getFilename())
-                .token(sharedFile.getToken())
-                .createdAt(sharedFile.getCreatedAt())
-                .active(sharedFile.isActive())
-                .build();
-    }
+    // Helper methods for public file downloads and previews
+    InputStream downloadSharedFile(String token, String password, String ip, String userAgent, boolean skipPasswordCheck);
+    InputStream previewSharedFile(String token, String password, String ip, String userAgent, boolean skipPasswordCheck);
+    FileMetadata getSharedFileMetadataByToken(String token);
 }

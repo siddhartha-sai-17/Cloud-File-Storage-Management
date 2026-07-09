@@ -12,6 +12,9 @@ public class ShareDto {
     private String fileName;
     private String token;
     private String shareLink;
-    private LocalDateTime createdAt;
+    private java.time.LocalDateTime createdAt;
+    private java.time.LocalDateTime expiresAt;
+    private Integer downloadLimit;
+    private int downloadCount;
     private boolean active;
 }

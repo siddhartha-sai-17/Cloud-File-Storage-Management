@@ -1,0 +1,15 @@
+services:
+  # Overrides for backend local dev debugging
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      logging.level.com.cloudstorage.backend: DEBUG
+    ports:
+      - "8080:8080"
+      - "5005:5005" # JVM Remote debugging port
+
+  # Enable easy local direct access to MinIO console port
+  minio:
+    ports:
+      - "9000:9000"
+      - "9001:9001"

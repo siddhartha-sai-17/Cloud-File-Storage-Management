@@ -12,7 +12,7 @@ public class SharedFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "file_id", nullable = false)
     private FileMetadata file;
 
@@ -26,6 +26,13 @@ public class SharedFile {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    private String passwordHash;
+
+    private Integer downloadLimit;
+
+    @Column(nullable = false)
+    private int downloadCount = 0;
 
     @PrePersist
     protected void onCreate() {

@@ -11,15 +11,22 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+ 
+    private final Key key;
+    private final long expirationTime;
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+    public JwtUtil(
+            @org.springframework.beans.factory.annotation.Value("${jwt.secret:defaultSecretKeyWithAtLeast256BitsOfEntropy!defaultSecretKeyWithAtLeast256BitsOfEntropy!}") String secret,
+            @org.springframework.beans.factory.annotation.Value("${jwt.expiration-ms:36000000}") long expirationTime) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        this.expirationTime = expirationTime;
+    }
 
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key)
                 .compact();
     }

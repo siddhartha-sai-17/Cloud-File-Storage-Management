@@ -19,4 +19,8 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(name = "sys_admin", nullable = false)
+    private boolean sysAdmin = false;
 }
+

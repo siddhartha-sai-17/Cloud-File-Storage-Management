@@ -23,6 +23,9 @@ public class AuthService {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already in use");
+        }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -34,9 +37,18 @@ public class AuthService {
     }
 
     public AuthDto.Response login(AuthDto.Request request) {
+        // Support login via email OR username
+        String loginId = request.getUsername() != null ? request.getUsername() : request.getEmail();
+
+        // Resolve real username (in case user logged in with email)
+        User user = userRepository.findByUsername(loginId)
+                .or(() -> userRepository.findByEmail(loginId))
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        // Authenticate with the resolved username
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        String token = jwtUtil.generateToken(request.getUsername());
+                new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword()));
+        String token = jwtUtil.generateToken(user.getUsername());
         return new AuthDto.Response(token);
     }
 }
